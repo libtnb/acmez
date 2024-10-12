@@ -162,9 +162,12 @@ func jwkEncode(pub crypto.PublicKey) (string, error) {
 // Since jwk and kid are mutually-exclusive, the jwk will be encoded
 // only if kid is empty. If nonce is empty, it will not be encoded.
 func jwsHead(alg, nonce, url string, kid keyID, key crypto.Signer) (string, error) {
-	// Hack url for JWS
-	if strings.Contains(url, "panel.haozi.net/api/acme/google") {
-		url = strings.ReplaceAll(url, "panel.haozi.net/api/acme/google", "dv.acme-v02.api.pki.goog")
+	// Hack url and kid for JWS
+	if strings.Contains(url, "gts.rat.dev") {
+		url = strings.ReplaceAll(url, "gts.rat.dev", "dv.acme-v02.api.pki.goog")
+	}
+	if strings.Contains(string(kid), "gts.rat.dev") {
+		kid = keyID(strings.ReplaceAll(string(kid), "gts.rat.dev", "dv.acme-v02.api.pki.goog"))
 	}
 
 	phead := fmt.Sprintf(`{"alg":%q`, alg)
