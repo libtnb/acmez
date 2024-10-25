@@ -131,6 +131,10 @@ func (c *Client) httpPostJWS(ctx context.Context, privateKey crypto.Signer,
 // If there are any network or I/O errors, the request will be retried as safely and resiliently as
 // possible.
 func (c *Client) httpReq(ctx context.Context, method, endpoint string, joseJSONPayload []byte, output any) (*http.Response, error) {
+	// Hack endpoint
+	if strings.Contains(endpoint, "dv.acme-v02.api.pki.goog") {
+		endpoint = strings.ReplaceAll(endpoint, "dv.acme-v02.api.pki.goog", "gts.rat.dev")
+	}
 	// even if the caller doesn't specify an output, we still use a
 	// buffer to store possible error response (we reset it later)
 	buf := bufPool.Get().(*bytes.Buffer)
