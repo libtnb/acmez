@@ -210,7 +210,11 @@ func (c *Client) GetRenewalInfo(ctx context.Context, leafCert *x509.Certificate)
 	// We add 1 to the start time since we are dealing in seconds for
 	// simplicity, but the server may provide sub-second timestamps.
 	start, end := ari.SuggestedWindow.Start.Unix()+1, ari.SuggestedWindow.End.Unix()
-	ari.SelectedTime = time.Unix(rand.Int63n(end-start)+start, 0).UTC()
+	seed := end-start
+	if seed <= 0 {
+		seed = 1 // avoid invalid argument
+	}
+	ari.SelectedTime = time.Unix(rand.Int63n(seed)+start, 0).UTC()
 
 	if c.Logger != nil {
 		c.Logger.LogAttrs(ctx, slog.LevelInfo, "got renewal info",
